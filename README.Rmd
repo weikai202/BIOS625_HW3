@@ -2,53 +2,123 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+# Simple Linear Regression
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
+## Table of Contents
+
+1.  [Overview](#overview)
+
+2.  [Installation](#installation)
+
+    -   [From GitHub](#from-github)
+
+3.  [Functions and Usage](#functions-and-usage)
+
+4.  [Benchmarking](#Benchmarking)
+
+5.  [Testing](#testing)
+
+## 1. Overview {#installation}
+
+The `SLR` package provides tools to perform simple linear regression analysis on a given dataset. It can calculate the regression intercept, slope, and residuals. The package also includes functions for predictions on new data, visualizing residuals and model predictions, and assessing model robustness through cross-validation.
+
+## 2. Installation
+### From GitHub
+To install the `SLR` package from GitHub, use the following command:
+
+```{r}
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+devtools::install_github("weikai202/BIOS625_HW3")
 ```
 
-# SLR
+## 3. Functions and Usage {#functions-and-usage}
 
-<!-- badges: start -->
-<!-- badges: end -->
+1.  simple_lm() Performs simple linear regression on a dataset, returning the intercept, slope, fitted values, and residuals.
 
-The goal of SLR is to ...
-
-## Installation
-
-You can install the development version of SLR like so:
-
-``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+```{r}
+x <- c(1, 2, 3, 4, 5)
+y <- c(2.2, 2.8, 3.6, 4.5, 5.1)
+model <- simple_lm(x, y)
+print(model)
 ```
 
-## Example
+2.  predict_simple_lm() Predicts new values based on a fitted model and new independent variable data.
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(SLR)
-## basic example code
+```{r}
+new_x <- c(6, 7, 8)
+predictions <- predict_simple_lm(model, new_x)
+print(predictions)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+3.  generate_data_and_fit() Generates random data, fits a linear regression model, and visualizes the relationship.
 
-```{r cars}
-summary(cars)
+```{r}
+generate_data_and_fit(n = 100)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+4.  plot_residuals() Visualizes the residuals from a fitted regression model to assess model assumptions.
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r}
+plot_residuals(x, y, model)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+5.  plot_lm() Plots the relationship between x and y along with the regression line.
+
+```{r}
+plot_lm(x, y, model)
+```
+
+6.  plot_cdf() Generates and visualizes the cumulative distribution function (CDF) for a numeric dataset.
+
+```{r}
+x <- c(1.5, 2.3, 2.8, 3.1, 1.2, 3.4, 2.1)
+plot_cdf(x)
+```
+
+7.  cross_validation() Performs k-fold cross-validation on a simple linear regression model, returning the average Mean Squared Error (MSE).
+
+```{r}
+mean_mse <- cross_validation(x, y, k = 5)
+print(mean_mse)
+```
+
+## 4. Benchmarking {#benchmarking}
+
+### Accuracy
+
+The simple_lm() function produces results consistent with R's built-in lm() function, ensuring correctness.
+
+```{r}
+model_simple <- simple_lm(x, y)
+model_lm <- lm(y ~ x)
+cat("Simple_lm coefficients:", model_simple$coefficients, "\n")
+cat("lm coefficients:", coef(model_lm), "\n")
+```
+
+### Computational Efficiency
+
+Efficient for small to medium-sized datasets. For larger datasets, optimizations may be considered.
+
+```{r}
+x_large <- rnorm(1000000)
+y_large <- 2 * x_large + 3 + rnorm(1000000, sd = 0.5)
+system.time({
+  model_large <- simple_lm(x_large, y_large)
+})
+```
+
+## 5. Testing {#testing}
+
+The project includes a suite of tests using testthat. To run tests:
+
+```{r}
+devtools::test()
+```
+
+# Summary
+
+The SLR package is an accessible tool for simple linear regression analysis, offering:
+
+Ease of Use: Simple functions for regression, predictions, and visualizations. Robustness: Cross-validation functionality to assess model generalizability. Accuracy: Results comparable to R's lm() function. Scalability: Efficient performance for datasets of various sizes.

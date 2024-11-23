@@ -7,13 +7,238 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+# Simple Linear Regression Package
+
+## Overview
+
+The `SLR` package allows users to perform simple linear regression analysis on a given dataset. It can calculate the regression intercept, slope, and residuals. Furthermore, it enables making predictions on new datasets, plotting residuals, and visualizing the predicted results. To assess the robustness of the model, the package also supports cross-validation functionality.
+
+## Installation
+
+You can install the package from GitHub using the following command:
+
+```{r}
+devtools::install_github("weikai202/SLR")
 ```
 
-```{r setup}
-library(SLR)
+# Functions
+
+## 1. simple_lm
+
+To perform linear regression on a dataset, use the simple_lm() function. It calculates the model parameters such as the intercept, slope, and residuals.
+
+```{r}
+# Example dataset
+x <- c(1, 2, 3, 4, 5)
+y <- c(2.2, 2.8, 3.6, 4.5, 5.1)
+
+# Perform simple linear regression
+model <- simple_lm(x, y)
+
+# Print the model details
+print(model)
 ```
+
+### Output:
+
+The output of simple_lm(x, y) will be a list with the following components:
+
+coefficients: Contains the intercept and slope of the regression line. fitted_values: The predicted values based on the fitted regression model. residuals: The residuals or errors of the model, calculated as the difference between actual and fitted values.
+
+### Handling Edge Cases
+
+If the vectors x and y have different lengths, the function will throw an error. If there is only a single data point, the model will return the dependent variable value as the intercept, and the slope will be zero. The fitted values will be equal to the original y values, and the residuals will be zero.
+
+## 2. predict_simple_lm
+
+The `predict_simple_lm()` function takes a fitted linear model and a vector of new values for the independent variable (`new_x`) and returns the predicted values based on the linear regression equation: $$
+\hat{y} = \text{intercept} + (\text{slope} \times \text{new}_x)
+$$
+
+```{r}
+# Example dataset
+x <- c(1, 2, 3, 4, 5)
+y <- c(2.2, 2.8, 3.6, 4.5, 5.1)
+
+# Perform simple linear regression
+model <- simple_lm(x, y)
+
+# New independent variable values for prediction
+new_x <- c(6, 7, 8)
+
+# Make predictions using the fitted model
+predictions <- predict_simple_lm(model, new_x)
+
+# View predictions
+predictions
+```
+
+### Output:
+
+The output will be a numeric vector containing the predicted values based on the new values of the independent variable (new_x).
+
+## 3. generate_data_and_fit
+
+The `generate_data_and_fit()` function generates random data points, fits a simple linear regression model to the generated data, and visualizes the results. This function is useful for demonstrating how linear regression works, especially when you want to simulate data for testing or learning purposes.
+
+```{r}
+generate_data_and_fit(n = 100)
+```
+
+### Explanation:
+
+The function will generate 100 data points for x from a normal distribution. It will then create y values using the formula $$y=2×x+3+noise$$, where noise is generated from a normal distribution with a standard deviation of 0.5. After fitting the linear regression model, the function will plot the x and y values along with the fitted regression line.
+
+### Output:
+
+The output will be a plot displaying the random data points and the fitted regression line. The plot should look like a scattered plot with a straight line representing the linear relationship between x and y.
+
+## 4. plot_residuals
+
+The `plot_residuals()` function visualizes the residuals from a simple linear regression model. Residuals are the differences between the observed values and the predicted values from the model. This plot is useful for checking the assumptions of linear regression, particularly the assumption of homoscedasticity (constant variance of residuals) and linearity.
+
+The function generates a scatter plot of the residuals against the independent variable `x`, and it includes a horizontal red line at zero to help identify any patterns in the residuals.
+
+```{r}
+# Example dataset
+x <- c(1, 2, 3, 4, 5)
+y <- c(2.2, 2.8, 3.6, 4.5, 5.1)
+
+# Perform simple linear regression
+model <- simple_lm(x, y)
+
+# Plot the residuals
+plot_residuals(x, y, model)
+```
+
+## 5. plot_lm()
+
+The `plot_lm()` function creates a plot showing the relationship between the independent variable (`x`) and the dependent variable (`y`), along with the fitted linear regression line. The function visualizes the actual data points and the predicted values from the linear regression model. It also draws the regression line, making it easier to understand the linear relationship between the variables.
+
+```{r}
+# Example dataset
+x <- c(1, 2, 3, 4, 5)
+y <- c(2.2, 2.8, 3.6, 4.5, 5.1)
+
+# Perform simple linear regression
+model <- simple_lm(x, y)
+
+# Plot the data and fitted regression line
+plot_lm(x, y, model)
+```
+
+### Output:
+
+The output will be a plot showing:
+
+Red points representing the actual data. Blue points representing the fitted values. A blue line representing the regression line.
+
+## 6. plot_cdf()
+
+The `plot_cdf()` function generates the cumulative distribution function (CDF) for a given numeric dataset. The CDF is a useful way to visualize the distribution of data, showing the proportion of data points less than or equal to each value. This function sorts the data in ascending order and then calculates the CDF for each data point, plotting the result as a step function.
+
+```{r}
+# Example dataset
+x <- c(1.5, 2.3, 2.8, 3.1, 1.2, 3.4, 2.1)
+
+# Plot the CDF of the dataset
+plot_cdf(x)
+```
+
+### Explanation:
+
+The function first sorts the data in ascending order. It then calculates the CDF by dividing each data point's index by the total number of points in the sorted dataset. The CDF is plotted as a step function, where the x-axis represents the sorted values and the y-axis represents the cumulative probability.
+
+### Output:
+
+The output will be a plot showing the cumulative distribution of the dataset. The x-axis will represent the sorted values of x, and the y-axis will represent the cumulative probability.
+
+## 7. cross_validation()
+
+The `cross_validation()` function performs k-fold cross-validation on a simple linear regression model. Cross-validation is a robust method to assess the performance of a model by partitioning the data into multiple subsets (folds) and training the model on some folds while testing it on others. This function computes the Mean Squared Error (MSE) for each fold and returns the average MSE across all folds, helping to evaluate the model's generalizability.
+
+```{r}
+# Example dataset
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+y <- c(2.1, 2.8, 3.4, 4.2, 5.0, 5.7, 6.5, 7.3, 8.1, 8.9)
+
+# Perform 5-fold cross-validation
+mean_mse <- cross_validation(x, y, k = 5)
+
+# View the average MSE
+mean_mse
+```
+
+### Explanation:
+
+The function splits the data into 5 folds and performs the linear regression model fitting on the training data while testing it on the test data. It computes the Mean Squared Error (MSE) for each fold and returns the average MSE.
+
+### Output:
+
+The output will be the average MSE calculated from the cross-validation process, which gives an idea of how well the model generalizes to unseen data.
+
+# Benchmark for `simple_lm()` Function
+
+## Purpose
+
+In this benchmark section, we evaluate the performance of the `simple_lm()` function, focusing on: 1. **Accuracy**: Comparing the results of the `simple_lm()` function with the built-in `lm()` function from R. 2. **Computational Efficiency**: Measuring the time it takes for the `simple_lm()` function to fit a model to datasets of varying sizes.
+
+## 1. Comparison with R's Built-In `lm()` Function
+
+To verify that the `simple_lm()` function provides results comparable to the built-in `lm()` function, we will fit a linear regression model using both methods and compare their coefficients (intercept and slope).
+
+### Example: Comparison of Results
+
+The results from simple_lm() should be very close to those from the lm() function, showing that both methods produce the same regression coefficients for the given data.
+
+```{r}
+# Example dataset
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+y <- c(2.1, 2.8, 3.5, 4.2, 5.0, 5.7, 6.5, 7.3, 8.0, 8.8)
+
+# Fit linear regression using simple_lm
+model_simple <- simple_lm(x, y)
+
+# Fit linear regression using lm()
+model_lm <- lm(y ~ x)
+
+# Compare the coefficients
+cat("Simple Linear Regression Model Coefficients:\n")
+print(model_simple$coefficients)
+
+cat("Built-in lm() Model Coefficients:\n")
+print(coef(model_lm))
+```
+
+This output demonstrates that the simple_lm() function yields results that are consistent with the built-in lm() function, confirming its correctness for basic linear regression tasks.
+
+## 2. Computational Efficiency Benchmark
+
+Next, we measure the execution time of the simple_lm() function for different dataset sizes. This will help assess the computational efficiency of the function.
+
+Example: Timing Execution for Different Dataset Sizes
+
+```{r}
+# Generate a larger dataset
+x_large <- rnorm(10000000)
+y_large <- 2 * x_large + 3 + rnorm(1000, sd = 0.5)
+
+# Time the execution of simple_lm
+system.time({
+  model_large <- simple_lm(x_large, y_large)
+})
+```
+
+This output indicates that the simple_lm() function is computationally efficient for a dataset of 10000000 data points. The function's time complexity is roughly linear in relation to the size of the dataset, meaning it will scale efficiently for moderate-sized datasets.
+
+## 3. Scalability
+
+For much larger datasets (e.g., tens of thousands of data points), the simple_lm() function will still perform efficiently. However, for very large datasets, further optimizations such as parallelization or vectorization could be considered to improve performance further.
+
+## 4. Summary of Benchmarking
+
+The simple_lm() function is both accurate and efficient for performing simple linear regression:
+
+Accuracy: The results from simple_lm() are consistent with R's built-in lm() function, as confirmed by comparing the regression coefficients. Computational Efficiency: The function executes quickly, even for large datasets (e.g., 10000000 data points), with execution times on the order of milliseconds.
+
+For most use cases, simple_lm() is suitable for small to medium-sized datasets. For larger datasets, performance is still acceptable, but optimizations may be required for scalability in very large datasets (e.g., tens of thousands or more data points).

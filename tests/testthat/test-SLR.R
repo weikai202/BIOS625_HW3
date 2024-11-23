@@ -1,44 +1,44 @@
-# 加载函数
-source("~/SLR/R/SLR.R")  # 确保路径正确
+# Load the function
+source("~/SLR/R/SLR.R")
 
-# 测试 simple_lm 函数
+# Test the simple_lm function
 test_that("simple_lm computes correct coefficients", {
-  # 示例数据
+  # Example data
   x <- c(1, 2, 3, 4, 5)
   y <- c(2.2, 2.8, 3.6, 4.5, 5.1)
 
-  # 调用函数
+  # Call the function
   model <- simple_lm(x, y)
 
-  # 检查系数
-  expect_equal(model$coefficients$intercept, 1.39, tolerance = 0.01)  # 截距
-  expect_equal(model$coefficients$slope, 0.75, tolerance = 0.01)      # 斜率
+  # Check the coefficients
+  expect_equal(model$coefficients$intercept, 1.39, tolerance = 0.01)  # Intercept
+  expect_equal(model$coefficients$slope, 0.75, tolerance = 0.01)      # Slope
 
-  # 检查拟合值
+  # Check the fitted values
   expected_fitted <- c(2.14, 2.89, 3.64, 4.39, 5.14)
   expect_equal(model$fitted_values, expected_fitted, tolerance = 0.01)
 
-  # 检查残差
+  # Check the residuals
   expected_residuals <- y - expected_fitted
   expect_equal(model$residuals, expected_residuals, tolerance = 0.01)
 })
 
 test_that("simple_lm handles input length mismatch", {
-  # 测试长度不匹配的情况
+  # Test for length mismatch
   a <- c(1, 2, 3)
   b <- c(1, 2)
 
-  # 期待错误
+  # Expect an error
   expect_error(simple_lm(a, b), "The lengths of x and y must be the same.")
 })
 
 test_that("simple_lm handles edge cases", {
-  # 测试单点情况
+  # Test for single point case
   x <- c(1)
   y <- c(2)
   model <- simple_lm(x, y)
 
-  # 单点情况结果为点本身
+  # For a single point, the result should be the point itself
   expect_equal(model$coefficients$intercept, 2, tolerance = 0.01)
   expect_equal(model$coefficients$slope, 0, tolerance = 0.01)
   expect_equal(model$fitted_values, c(2), tolerance = 0.01)
